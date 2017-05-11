@@ -1188,7 +1188,7 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
 	struct device *dev = indio_dev->dev.parent;
 	struct xadc *xadc = iio_priv(indio_dev);
 	const struct iio_chan_spec *channel_templates;
-	struct iio_chan_spec *channels;
+	struct iio_chan_spec *iio_xadc_channels;
 	struct device_node *chan_node, *child;
 	unsigned int max_channels;
 	unsigned int num_channels;
@@ -1238,9 +1238,9 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
 		channel_templates = xadc_us_channels;
 		max_channels = ARRAY_SIZE(xadc_us_channels);
 	}
-	channels = devm_kmemdup(dev, channel_templates,
-				sizeof(channels[0]) * max_channels, GFP_KERNEL);
-	if (!channels)
+	iio_xadc_channels = devm_kmemdup(dev, channel_templates,
+				sizeof(channel_templates), GFP_KERNEL);
+	if (!iio_xadc_channels)
 		return -ENOMEM;
 
 	num_channels = 9;
@@ -1257,11 +1257,11 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
 			if (ret || reg > 16)
 				continue;
 
-			channels[num_channels] = channel_templates[reg + 9];
-			channels[num_channels].channel = num_channels - 1;
+			iio_xadc_channels[num_channels] = channel_templates[reg + 9];
+			iio_xadc_channels[num_channels].channel = num_channels - 1;
 
 			if (of_property_read_bool(child, "xlnx,bipolar"))
-				channels[num_channels].scan_type.sign = 's';
+				iio_xadc_channels[num_channels].scan_type.sign = 's';
 
 			num_channels++;
 		}
@@ -1269,12 +1269,12 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
 	of_node_put(chan_node);
 
 	indio_dev->num_channels = num_channels;
-	indio_dev->channels = devm_krealloc(dev, channels,
-					    sizeof(*channels) * num_channels,
+	indio_dev->channels = devm_krealloc(dev, iio_xadc_channels,
+					    sizeof(*iio_xadc_channels) * num_channels,
 					    GFP_KERNEL);
 	/* If we can't resize the channels array, just use the original */
 	if (!indio_dev->channels)
-		indio_dev->channels = channels;
+		indio_dev->channels = iio_xadc_channels;
 
 	return 0;
 }
