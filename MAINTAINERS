@@ -6099,6 +6099,15 @@ T:	git git://anongit.freedesktop.org/drm/drm-misc
 F:	Documentation/gpu/xen-front.rst
 F:	drivers/gpu/drm/xen/
 
+DRM DRIVERS FOR XILINX
+M:	Hyun Kwon <hyun.kwon@xilinx.com>
+M:	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+L:	dri-devel@lists.freedesktop.org
+S:	Maintained
+F:	drivers/gpu/drm/xlnx/
+F:	Documentation/devicetree/bindings/display/xlnx/
+T:	git git://anongit.freedesktop.org/drm/drm-misc
+
 DRM PANEL DRIVERS
 M:	Thierry Reding <thierry.reding@gmail.com>
 R:	Sam Ravnborg <sam@ravnborg.org>
