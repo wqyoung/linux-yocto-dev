@@ -141,6 +141,7 @@ enum pm_ioctl_id {
 	IOCTL_SET_RPU_OPER_MODE = 1,
 	IOCTL_RPU_BOOT_ADDR_CONFIG = 2,
 	IOCTL_TCM_COMB_CONFIG = 3,
+	IOCTL_SET_TAPDELAY_BYPASS = 4,
 	IOCTL_SET_SGMII_MODE = 5,
 	IOCTL_SD_DLL_RESET = 6,
 	IOCTL_SET_SD_TAPDELAY = 7,
@@ -419,6 +420,18 @@ enum zynqmp_pm_shutdown_subtype {
 	ZYNQMP_PM_SHUTDOWN_SUBTYPE_SYSTEM = 2,
 };
 
+enum tap_delay_signal_type {
+	PM_TAPDELAY_NAND_DQS_IN = 0,
+	PM_TAPDELAY_NAND_DQS_OUT = 1,
+	PM_TAPDELAY_QSPI = 2,
+	PM_TAPDELAY_MAX = 3,
+};
+
+enum tap_delay_bypass_ctrl {
+	PM_TAPDELAY_BYPASS_DISABLE = 0,
+	PM_TAPDELAY_BYPASS_ENABLE = 1,
+};
+
 enum sgmii_mode {
 	PM_SGMII_DISABLE = 0,
 	PM_SGMII_ENABLE = 1,
@@ -499,6 +512,7 @@ int zynqmp_pm_read_ggs(u32 index, u32 *value);
 int zynqmp_pm_write_pggs(u32 index, u32 value);
 int zynqmp_pm_read_pggs(u32 index, u32 *value);
 int zynqmp_pm_afi(u32 index, u32 value);
+int zynqmp_pm_set_tapdelay_bypass(u32 index, u32 value);
 int zynqmp_pm_set_sgmii_mode(u32 enable);
 int zynqmp_pm_ulpi_reset(void);
 int zynqmp_pm_system_shutdown(const u32 type, const u32 subtype);
@@ -692,6 +706,11 @@ static inline int zynqmp_pm_read_pggs(u32 index, u32 *value)
 }
 
 static inline int zynqmp_pm_afi(u32 index, u32 value)
+{
+	return -ENODEV;
+}
+
+static inline int zynqmp_pm_set_tapdelay_bypass(u32 index, u32 value)
 {
 	return -ENODEV;
 }
