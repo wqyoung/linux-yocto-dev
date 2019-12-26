@@ -20,6 +20,7 @@ properties:
               - ti,k2g-qspi
               - ti,am654-ospi
               - intel,lgm-qspi
+              - xlnx,versal-ospi-1.0
           - const: cdns,qspi-nor
       - const: cdns,qspi-nor
 
