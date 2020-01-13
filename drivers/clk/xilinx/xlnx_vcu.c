@@ -48,28 +48,6 @@
 #define FVCO_MIN			(1500U * MHZ)
 #define FVCO_MAX			(3000U * MHZ)
 
-/**
- * struct xvcu_device - Xilinx VCU init device structure
- * @dev: Platform device
- * @pll_ref: pll ref clock source
- * @aclk: axi clock source
- * @logicore_reg_ba: logicore reg base address
- * @vcu_slcr_ba: vcu_slcr Register base address
- * @pll: handle for the VCU PLL
- * @pll_post: handle for the VCU PLL post divider
- * @clk_data: clocks provided by the vcu clock provider
- */
-struct xvcu_device {
-	struct device *dev;
-	struct clk *pll_ref;
-	struct clk *aclk;
-	struct regmap *logicore_reg_ba;
-	void __iomem *vcu_slcr_ba;
-	struct clk_hw *pll;
-	struct clk_hw *pll_post;
-	struct clk_hw_onecell_data *clk_data;
-};
-
 static struct regmap_config vcu_settings_regmap_config = {
 	.name = "regmap",
 	.reg_bits = 32,
