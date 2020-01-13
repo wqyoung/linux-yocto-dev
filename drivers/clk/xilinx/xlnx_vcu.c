@@ -19,6 +19,8 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
+#include <soc/xilinx/xlnx_vcu.h>
+
 #include <dt-bindings/clock/xlnx-vcu.h>
 
 #define VCU_PLL_CTRL			0x24
@@ -211,6 +213,32 @@ static inline u32 xvcu_read(void __iomem *iomem, u32 offset)
 {
 	return ioread32(iomem + offset);
 }
+
+/**
+ * xvcu_get_color_depth - read the color depth register
+ * @xvcu:	Pointer to the xvcu_device structure
+ *
+ * Return:	Returns 32bit value
+ *
+ */
+u32 xvcu_get_color_depth(struct xvcu_device *xvcu)
+{
+	return xvcu_read(xvcu->logicore_reg_ba, VCU_ENC_COLOR_DEPTH);
+}
+EXPORT_SYMBOL_GPL(xvcu_get_color_depth);
+
+/**
+ * xvcu_get_memory_depth - read the memory depth register
+ * @xvcu:	Pointer to the xvcu_device structure
+ *
+ * Return:	Returns 32bit value
+ *
+ */
+u32 xvcu_get_memory_depth(struct xvcu_device *xvcu)
+{
+	return xvcu_read(xvcu->logicore_reg_ba, VCU_MEMORY_DEPTH);
+}
+EXPORT_SYMBOL_GPL(xvcu_get_memory_depth);
 
 /**
  * xvcu_write - Write to the VCU register space
@@ -686,6 +714,12 @@ static int xvcu_probe(struct platform_device *pdev)
 
 	dev_set_drvdata(&pdev->dev, xvcu);
 
+	ret = of_platform_populate(xvcu->dev->of_node, NULL, NULL, &pdev->dev);
+	if (ret) {
+		dev_err(&pdev->dev, "Failed to register allegro codecs\n");
+		goto error_pll_ref;
+	}
+
 	return 0;
 
 error_clk_provider:
@@ -695,7 +729,7 @@ error_clk_provider:
 }
 
 /**
- * xvcu_remove - Insert gasket isolation
+ * xvcu_remove - Depopulate the child nodes, Insert gasket isolation
  *			and disable the clock
  * @pdev:	Pointer to the platform_device structure
  *
@@ -711,6 +745,8 @@ static int xvcu_remove(struct platform_device *pdev)
 		return -ENODEV;
 
 	xvcu_unregister_clock_provider(xvcu);
+
+	of_platform_depopulate(&pdev->dev);
 
 	/* Add the Gasket isolation and put the VCU in reset. */
 	regmap_write(xvcu->logicore_reg_ba, VCU_GASKET_INIT, 0);
