@@ -300,6 +300,19 @@ u32 xvcu_get_clock_frequency(struct xvcu_device *xvcu)
 EXPORT_SYMBOL_GPL(xvcu_get_clock_frequency);
 
 /**
+ * xvcu_get_num_cores - read the number of core register
+ * @xvcu:	Pointer to the xvcu_device structure
+ *
+ * Return:	Returns 32bit value
+ *
+ */
+u32 xvcu_get_num_cores(struct xvcu_device *xvcu)
+{
+	return xvcu_read(xvcu->logicore_reg_ba, VCU_NUM_CORE);
+}
+EXPORT_SYMBOL_GPL(xvcu_get_num_cores);
+
+/**
  * xvcu_set_vcu_pll_info - Set the VCU PLL info
  * @xvcu:	Pointer to the xvcu_device structure
  *
