@@ -147,6 +147,7 @@ extern int spi_delay_exec(struct spi_delay *_delay, struct spi_transfer *xfer);
  *	not using a GPIO line)
  * @word_delay: delay to be inserted between consecutive
  *	words of a transfer
+ * @multi_die: Flash device with multiple dies.
  *
  * @statistics: statistics for the spi_device
  *
@@ -188,6 +189,7 @@ struct spi_device {
 	int			cs_gpio;	/* LEGACY: chip select gpio */
 	struct gpio_desc	*cs_gpiod;	/* chip select gpio desc */
 	struct spi_delay	word_delay; /* inter-word delay */
+	bool			multi_die;	/* flash with multiple dies*/
 
 	/* the statistics */
 	struct spi_statistics	statistics;
