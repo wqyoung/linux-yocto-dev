@@ -338,7 +338,11 @@ struct flash_info {
 					 * protection bits. Usually these will
 					 * power-up in a write-protected state.
 					 */
+#define	SST_GLOBAL_PROT_UNLK	BIT(16)	/* Unlock the Global protection for
+					 * sst flashes
+					 */
 
+	int	(*quad_enable)(struct spi_nor *nor);
 	/* Part specific fixup hooks. */
 	const struct spi_nor_fixups *fixups;
 };
