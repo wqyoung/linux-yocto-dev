@@ -508,7 +508,7 @@ struct spi_controller {
 #define SPI_CONTROLLER_MUST_TX		BIT(4)	/* requires tx */
 
 #define SPI_MASTER_GPIO_SS		BIT(5)	/* GPIO CS must select slave */
-
+#define SPI_MASTER_BOTH_CS		BIT(8)	/* assert both chip selects */
 	/* flag indicating this is a non-devres managed controller */
 	bool			devm_allocated;
 
