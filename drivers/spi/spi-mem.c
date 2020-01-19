@@ -32,6 +32,7 @@ bool update_stripe(const u8 opcode)
 
 	return true;
 }
+EXPORT_SYMBOL(update_stripe);
 
 /**
  * spi_controller_dma_map_mem_op_data() - DMA-map the buffer attached to a
