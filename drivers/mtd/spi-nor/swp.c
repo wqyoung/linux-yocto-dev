@@ -352,6 +352,13 @@ static int spi_nor_lock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 	if (ret)
 		return ret;
 
+	if (nor->isparallel == 1)
+		ofs = ofs >> nor->shift;
+
+	if (nor->isstacked == 1) {
+		if (ofs >= (mtd->size / 2))
+			ofs = ofs - (mtd->size / 2);
+	}
 	ret = nor->params->locking_ops->lock(nor, ofs, len);
 
 	spi_nor_unlock_and_unprep(nor);
@@ -388,6 +395,16 @@ static int spi_nor_is_locked(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 	return ret;
 }
 
+static void spi_nor_prot_unlock(struct spi_nor *nor)
+{
+	if (nor->info->flags & SST_GLOBAL_PROT_UNLK) {
+		spi_nor_write_enable(nor);
+		/* Unlock global write protection bits */
+		nor->controller_ops->write_reg(nor, GLOBAL_BLKPROT_UNLK, NULL, 0);
+	}
+	spi_nor_wait_till_ready(nor);
+}
+
 /**
  * spi_nor_try_unlock_all() - Tries to unlock the entire flash memory array.
  * @nor:	pointer to a 'struct spi_nor'.
@@ -403,12 +420,16 @@ static int spi_nor_is_locked(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 void spi_nor_try_unlock_all(struct spi_nor *nor)
 {
 	int ret;
+	const struct flash_info *info = nor->info;
 
 	if (!(nor->flags & SNOR_F_HAS_LOCK))
 		return;
 
 	dev_dbg(nor->dev, "Unprotecting entire flash array\n");
 
+	if (info->flags & SST_GLOBAL_PROT_UNLK) {
+		spi_nor_prot_unlock(nor);
+	}
 	ret = spi_nor_unlock(&nor->mtd, 0, nor->params->size);
 	if (ret)
 		dev_dbg(nor->dev, "Failed to unlock the entire flash memory array\n");

@@ -382,7 +382,11 @@ struct flash_info {
 					 */
 
 	const struct spi_nor_otp_organization otp_org;
+#define	SST_GLOBAL_PROT_UNLK	BIT(16)	/* Unlock the Global protection for
+					 * sst flashes
+					 */
 
+	int	(*quad_enable)(struct spi_nor *nor);
 	/* Part specific fixup hooks. */
 	const struct spi_nor_fixups *fixups;
 };
