@@ -47,4 +47,5 @@ obj-$(CONFIG_QLGE)		+= qlge/
 obj-$(CONFIG_WIMAX)		+= wimax/
 obj-$(CONFIG_WFX)		+= wfx/
 obj-$(CONFIG_XILINX_FCLK)	+= fclk/
+obj-$(CONFIG_XLNX_SYNC)		+= xlnxsync/
 obj-y				+= hikey9xx/
