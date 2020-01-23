@@ -1561,6 +1561,11 @@ static void dwc3_check_params(struct dwc3 *dwc)
 			dwc->maximum_speed = USB_SPEED_SUPER;
 			break;
 		}
+
+#if IS_ENABLED(CONFIG_USB_DWC3_OTG)
+		dwc->current_dr_role = 0;
+		dwc3_set_mode(dwc, DWC3_GCTL_PRTCAP_OTG);
+#endif
 		break;
 	}
 
