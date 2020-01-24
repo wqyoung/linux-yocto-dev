@@ -122,7 +122,7 @@
 /* Default TX/RX Threshold and waitbound values for SGDMA mode */
 #define XAXIDMA_DFT_TX_THRESHOLD	24
 #define XAXIDMA_DFT_TX_WAITBOUND	254
-#define XAXIDMA_DFT_RX_THRESHOLD	24
+#define XAXIDMA_DFT_RX_THRESHOLD	1
 #define XAXIDMA_DFT_RX_WAITBOUND	254
 
 #define XAXIDMA_BD_CTRL_TXSOF_MASK	0x08000000 /* First tx packet */
@@ -342,6 +342,8 @@
 #define XLNX_MII_STD_SELECT_REG		0x11
 #define XLNX_MII_STD_SELECT_SGMII	BIT(0)
 
+#define XAXIENET_NAPI_WEIGHT		64
+
 /**
  * struct axidma_bd - Axi Dma buffer descriptor layout
  * @next:         MM2S/S2MM Next Descriptor Pointer
@@ -443,6 +445,8 @@ struct axienet_local {
 	void __iomem *dma_regs;
 
 	struct work_struct dma_err_task;
+	spinlock_t rx_lock;		/* Spin lock */
+	struct napi_struct napi;	/* NAPI Structure */
 
 	int tx_irq;
 	int rx_irq;
