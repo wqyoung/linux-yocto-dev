@@ -3643,7 +3643,7 @@ static void spi_nor_resume(struct mtd_info *mtd)
 void spi_nor_restore(struct spi_nor *nor)
 {
 	/* restore the addressing mode */
-	if (nor->addr_width == 4 && !(nor->info->flags & SNOR_F_4B_OPCODES) &&
+	if (nor->addr_width == 4 && !(nor->flags & SNOR_F_4B_OPCODES) &&
 	    (nor->flags & SNOR_F_BROKEN_RESET) &&
 	    (nor->jedec_id != CFI_MFR_AMD) &&
 	    !(nor->info->flags & SPI_NOR_4B_OPCODES))
