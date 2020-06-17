@@ -640,7 +640,8 @@ static int xvcu_probe(struct platform_device *pdev)
 
 	xvcu->pll_ref = devm_clk_get(pdev->dev.parent, "pll_ref");
 	if (IS_ERR(xvcu->pll_ref)) {
-		dev_err(&pdev->dev, "Could not get pll_ref clock\n");
+		if (PTR_ERR(xvcu->pll_ref) != -EPROBE_DEFER)
+			dev_err(&pdev->dev, "Could not get pll_ref clock\n");
 		return PTR_ERR(xvcu->pll_ref);
 	}
 
