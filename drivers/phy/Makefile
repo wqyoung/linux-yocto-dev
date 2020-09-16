@@ -29,5 +29,4 @@ obj-y					+= allwinner/	\
 					   socionext/	\
 					   st/		\
 					   tegra/	\
-					   ti/		\
-					   xilinx/
+					   ti/
