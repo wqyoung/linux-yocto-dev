@@ -1833,6 +1833,7 @@ enum v4l2_ctrl_type {
 	V4L2_CTRL_TYPE_FWHT_PARAMS	    = 0x0220,
 
 	V4L2_CTRL_TYPE_VP8_FRAME            = 0x0240,
+	V4L2_CTRL_TYPE_HDR	     = 0x0250,
 };
 
 /*  Used in the VIDIOC_QUERYCTRL ioctl for querying controls */
