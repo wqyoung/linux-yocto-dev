@@ -482,7 +482,7 @@
 			#size-cells = <0>;
 			reg = <4>;
 			si5382: clock-generator@69 { /* SI5382 - u48 */
-				compatible = "silabs,si5328";
+				compatible = "silabs,si5382";
 				reg = <0x69>;
 			};
 		};
