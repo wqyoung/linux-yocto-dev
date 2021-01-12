@@ -1049,13 +1049,20 @@ static int axienet_open(struct net_device *ndev)
 
 	dev_dbg(&ndev->dev, "axienet_open()\n");
 
-	/* When we do an Axi Ethernet reset, it resets the complete core
-	 * including the MDIO. MDIO must be disabled before resetting.
+	/* Disable the MDIO interface till Axi Ethernet Reset is completed.
+	 * When we do an Axi Ethernet reset, it resets the complete core
+	 * including the MDIO. MDIO must be disabled before resetting
+	 * and re-enabled afterwards.
 	 * Hold MDIO bus lock to avoid MDIO accesses during the reset.
 	 */
 	mutex_lock(&lp->mii_bus->mdio_lock);
+	axienet_mdio_disable(lp);
 	ret = axienet_device_reset(ndev);
+	if (ret == 0)
+		ret = axienet_mdio_enable(lp);
 	mutex_unlock(&lp->mii_bus->mdio_lock);
+	if (ret < 0)
+		return ret;
 
 	ret = phylink_of_phy_connect(lp->phylink, lp->dev->of_node, 0);
 	if (ret) {
@@ -1149,7 +1156,9 @@ static int axienet_stop(struct net_device *ndev)
 
 	/* Do a reset to ensure DMA is really stopped */
 	mutex_lock(&lp->mii_bus->mdio_lock);
+	axienet_mdio_disable(lp);
 	__axienet_device_reset(lp);
+	axienet_mdio_enable(lp);
 	mutex_unlock(&lp->mii_bus->mdio_lock);
 
 	cancel_work_sync(&lp->dma_err_task);
@@ -1697,12 +1706,16 @@ static void axienet_dma_err_handler(struct work_struct *work)
 
 	axienet_setoptions(ndev, lp->options &
 			   ~(XAE_OPTION_TXEN | XAE_OPTION_RXEN));
-	/* When we do an Axi Ethernet reset, it resets the complete core
-	 * including the MDIO. MDIO must be disabled before resetting.
+	/* Disable the MDIO interface till Axi Ethernet Reset is completed.
+	 * When we do an Axi Ethernet reset, it resets the complete core
+	 * including the MDIO. MDIO must be disabled before resetting
+	 * and re-enabled afterwards.
 	 * Hold MDIO bus lock to avoid MDIO accesses during the reset.
 	 */
 	mutex_lock(&lp->mii_bus->mdio_lock);
+	axienet_mdio_disable(lp);
 	__axienet_device_reset(lp);
+	axienet_mdio_enable(lp);
 	mutex_unlock(&lp->mii_bus->mdio_lock);
 
 	for (i = 0; i < lp->tx_bd_num; i++) {
