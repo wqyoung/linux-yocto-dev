@@ -1178,7 +1178,7 @@ zynqmp_disp_plane_atomic_disable(struct drm_plane *plane,
 
 	if (layer->id == ZYNQMP_DISP_LAYER_GFX)
 		zynqmp_disp_blend_set_global_alpha(&layer->disp->blend, false,
-						   0);
+						   plane->state->alpha >> 8);
 }
 
 static void
@@ -1210,7 +1210,7 @@ zynqmp_disp_plane_atomic_update(struct drm_plane *plane,
 
 	if (layer->id == ZYNQMP_DISP_LAYER_GFX)
 		zynqmp_disp_blend_set_global_alpha(&layer->disp->blend, true,
-						   255);
+						   plane->state->alpha >> 8);
 
 	/* Enable or re-enable the plane is the format has changed. */
 	if (format_changed)
@@ -1269,6 +1269,8 @@ static int zynqmp_disp_create_planes(struct zynqmp_disp *disp)
 				     &zynqmp_disp_plane_helper_funcs);
 
 		drm_plane_create_zpos_immutable_property(&layer->plane, i);
+		if (type == DRM_PLANE_TYPE_OVERLAY)
+			drm_plane_create_alpha_property(&layer->plane);
 	}
 
 	return 0;
