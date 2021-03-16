@@ -276,7 +276,7 @@ static ssize_t spi_nor_spimem_write_data(struct spi_nor *nor, loff_t to,
 	if (spi_nor_spimem_bounce(nor, &op))
 		memcpy(nor->bouncebuf, buf, op.data.nbytes);
 
-	if (nor->dirmap.wdesc) {
+	if (nor->dirmap.wdesc && !(nor->info->flags & SST_WRITE)) {
 		nbytes = spi_mem_dirmap_write(nor->dirmap.wdesc, op.addr.val,
 					      op.data.nbytes, op.data.buf.out);
 	} else {
@@ -3113,6 +3113,14 @@ static int spi_nor_init(struct spi_nor *nor)
 		return err;
 	}
 
+	if (nor->jedec_id == CFI_MFR_ATMEL ||
+	    nor->jedec_id == CFI_MFR_INTEL ||
+	    nor->jedec_id == CFI_MFR_SST ||
+	    nor->flags & SNOR_F_HAS_LOCK) {
+		spi_nor_write_enable(nor);
+		nor->bouncebuf[0] = 0;
+		spi_nor_write_sr(nor, nor->bouncebuf, 1);
+	}
 	err = spi_nor_quad_enable(nor);
 	if (err) {
 		dev_dbg(nor->dev, "quad mode not supported\n");
@@ -3473,7 +3481,11 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
 	if (info->flags & SPI_NOR_HAS_LOCK)
 		nor->flags |= SNOR_F_HAS_LOCK;
 
-	mtd->_write = spi_nor_write;
+	/* sst nor chips use AAI word program */
+	if (info->flags & SST_WRITE)
+		mtd->_write = sst_write;
+	else
+		mtd->_write = spi_nor_write;
 
 	/* Init flash parameters based on flash_info struct and SFDP */
 	ret = spi_nor_init_params(nor);
