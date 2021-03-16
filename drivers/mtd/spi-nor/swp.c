@@ -426,8 +426,18 @@ static void spi_nor_prot_unlock(struct spi_nor *nor)
 {
 	if (nor->info->flags & SST_GLOBAL_PROT_UNLK) {
 		spi_nor_write_enable(nor);
-		/* Unlock global write protection bits */
-		nor->controller_ops->write_reg(nor, GLOBAL_BLKPROT_UNLK, NULL, 0);
+		if (nor->spimem) {
+			struct spi_mem_op op =
+				SPI_MEM_OP(SPI_MEM_OP_CMD(GLOBAL_BLKPROT_UNLK, 1),
+					   SPI_MEM_OP_NO_ADDR,
+					   SPI_MEM_OP_NO_DUMMY,
+					   SPI_MEM_OP_NO_DATA);
+
+			spi_mem_exec_op(nor->spimem, &op);
+		} else {
+			/* Unlock global write protection bits */
+			nor->controller_ops->write_reg(nor, GLOBAL_BLKPROT_UNLK, NULL, 0);
+		}
 	}
 	spi_nor_wait_till_ready(nor);
 }
@@ -449,7 +459,10 @@ void spi_nor_try_unlock_all(struct spi_nor *nor)
 	int ret;
 	const struct flash_info *info = nor->info;
 
-	if (!(nor->flags & SNOR_F_HAS_LOCK))
+	if (!(nor->jedec_id == CFI_MFR_ATMEL) &&
+	    !(nor->jedec_id == CFI_MFR_INTEL) &&
+	    !(nor->jedec_id == CFI_MFR_SST) &&
+	    !(nor->flags & SNOR_F_HAS_LOCK))
 		return;
 
 	dev_dbg(nor->dev, "Unprotecting entire flash array\n");
