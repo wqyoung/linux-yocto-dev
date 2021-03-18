@@ -352,7 +352,7 @@ struct irq_desc *irq_to_desc(unsigned int irq)
 {
 	return radix_tree_lookup(&irq_desc_tree, irq);
 }
-#ifdef CONFIG_KVM_BOOK3S_64_HV_MODULE
+#if defined(CONFIG_KVM_BOOK3S_64_HV_MODULE) || IS_ENABLED(CONFIG_ZYNQ_REMOTEPROC)
 EXPORT_SYMBOL_GPL(irq_to_desc);
 #endif
 
