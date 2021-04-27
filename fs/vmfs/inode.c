@@ -193,7 +193,7 @@ void vmfs_set_inode_attr(struct inode *inode, struct vmfs_fattr *fattr)
 	 * A size change should have a different mtime, or same mtime
 	 * but different size.
 	 */
-	time_t last_time = inode->i_mtime.tv_sec;
+	time64_t last_time = inode->i_mtime.tv_sec;
 	loff_t last_sz = inode->i_size;
 
 	inode->i_mode = fattr->f_mode;

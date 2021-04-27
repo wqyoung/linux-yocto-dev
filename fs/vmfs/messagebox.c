@@ -122,7 +122,7 @@ struct message_box *mb_new(phys_addr_t dev_base, u32 dev_irq)
 
 	request_mem_region(dev_base, MBOX_DEVICE_SIZE, "messagebox");
 
-	mb->dev = ioremap_nocache(dev_base, MBOX_DEVICE_SIZE);
+	mb->dev = ioremap(dev_base, MBOX_DEVICE_SIZE);
 
 	DEBUG1("device registers mapped at %p, size 0x%x\n", mb->dev,
 	       MBOX_DEVICE_SIZE);

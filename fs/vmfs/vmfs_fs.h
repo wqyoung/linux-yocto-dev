@@ -57,7 +57,7 @@ vmfs_age_dentry(struct vmfs_sb_info *server, struct dentry *dentry)
 }
 
 struct vmfs_cache_head {
-	time_t mtime;		/* unused */
+	time64_t mtime;		/* unused */
 	unsigned long time;	/* cache age */
 	unsigned long end;	/* last valid fpos in cache */
 	int eof;
