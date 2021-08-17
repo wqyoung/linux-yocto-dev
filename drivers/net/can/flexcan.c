@@ -1266,6 +1266,7 @@ static struct sk_buff *flexcan_mailbox_read(struct can_rx_offload *offload,
 
 	if (unlikely(drop)) {
 		skb = ERR_PTR(-ENOBUFS);
+		spin_lock_irqsave(&priv->timer_access, flags);
 		goto mark_as_read;
 	}
 
