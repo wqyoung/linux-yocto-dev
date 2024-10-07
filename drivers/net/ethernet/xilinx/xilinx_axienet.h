@@ -888,6 +888,7 @@ struct aximcdma_bd {
  * @eoe_regs: Ethernet offload IP base address.
  * @eoe_connected: Tells whether ethernet offload IP is connected to Ethernet IP.
  * @eoe_features: EOE IP supported configuration.
+ * @inetaddr_notifier: Notifier callback function for specific event.
  */
 struct axienet_local {
 	struct net_device *ndev;
@@ -983,6 +984,7 @@ struct axienet_local {
 	void __iomem *eoe_regs;
 	bool eoe_connected;
 	u32 eoe_features;
+	struct notifier_block inetaddr_notifier;
 };
 
 /**
